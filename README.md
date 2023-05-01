@@ -51,6 +51,12 @@ ping_results = {
 }
 ```
 
+and
+
+```
+ping_aggregated = "pass"
+```
+
 
 ## Used Providers
 

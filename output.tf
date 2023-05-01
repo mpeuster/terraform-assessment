@@ -15,6 +15,11 @@ output "ping_results" {
   description = "Ping results pass/fail for each VM. Map vm_index => {result, src, dst}"
 }
 
+output "ping_aggregated" {
+  value       = (contains(tolist(data.remote_file.ping_results.*.content), "fail") ? "fail" : "pass")
+  description = "Aggregated ping result"
+}
+
 output "ping_logs" {
   value       = data.remote_file.ping_logs.*.content
   description = "Full ping output for debugging. Not part of the requirements."
