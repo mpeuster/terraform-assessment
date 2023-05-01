@@ -2,6 +2,13 @@ provider_aws = {
   region = "eu-north-1" # north-1 because it seems to be the cheapest eu regions at the moment
 }
 
+# Local paths to your SSH keys that shall be used to access the VMs for remote execution.
+# Please change.
+ssh_keys = {
+  public_key_path  = "~/.ssh/aws_demo.pub"
+  private_key_path = "~/.ssh/aws_demo"
+}
+
 common_tags = {
   "project" = "Bosch.io Assessment"
 }

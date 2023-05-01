@@ -20,6 +20,13 @@ variable "subnet_params" {
   })
 }
 
+variable "ssh_keys" {
+  type = object({
+    public_key_path  = string
+    private_key_path = string
+  })
+}
+
 variable "vm_pool_params" {
   type = object({
     vm_count  = number
