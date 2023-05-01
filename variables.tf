@@ -27,12 +27,23 @@ variable "ssh_keys" {
   })
 }
 
+variable "remote_user" {
+  type = string
+}
+
 variable "vm_pool_params" {
   type = object({
     vm_count  = number
     vm_flavor = string
     vm_image  = string
   })
+}
+
+variable "vm_pool_params_individual_overwrite" {
+  type = map(object({
+    vm_flavor = string
+    vm_image  = string
+  }))
 }
 
 
