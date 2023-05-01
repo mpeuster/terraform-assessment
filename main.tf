@@ -4,6 +4,10 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 4.16"
     }
+    remote = {
+      source = "tenstad/remote"
+      version = "0.1.1"
+    }
   }
 
   required_version = ">= 1.2.0"
@@ -138,10 +142,10 @@ resource "null_resource" "pinger" {
   count = var.vm_pool_params.vm_count
 
   triggers = {
-    all_pool_instances = join(",", aws_instance.vm_pool.*.id)
+    all_pool_instances = join(",", aws_instance.vm_pool.*.id),  # ensure we run after all instances are created
+    exec_key = uuid() # force the remote-exec to run on each apply
   }
 
-  # configure external SSH access to the instances to be able to use remote-exec
   connection {
     type        = "ssh"
     user        = "ec2-user"
@@ -150,9 +154,32 @@ resource "null_resource" "pinger" {
   }
 
   provisioner "remote-exec" {
-
-    inline = ["ping -c1 10.0.100.11 > /tmp/ping.log"]
+    # TODO: this needs some documentation
+    inline = [
+        "ping -c1 ${cidrhost(var.subnet_params.cidr_block, 10 + (count.index + 1) % var.vm_pool_params.vm_count)} > /tmp/ping.log && echo 'pass' > /tmp/ping.result || echo 'fail' > /tmp/ping.result"
+    ]
+    on_failure = continue
   }
+}
 
+data "remote_file" "ping_logs" {
+  count = var.vm_pool_params.vm_count
+  depends_on = [null_resource.pinger]
+  conn {
+    user        = "ec2-user"
+    private_key = file(var.ssh_keys.private_key_path)
+    host        = aws_eip.public-eip[count.index].public_ip
+  }
+  path = "/tmp/ping.log"
+}
 
+data "remote_file" "ping_results" {
+  count = var.vm_pool_params.vm_count
+  depends_on = [null_resource.pinger]
+  conn {
+    user        = "ec2-user"
+    private_key = file(var.ssh_keys.private_key_path)
+    host        = aws_eip.public-eip[count.index].public_ip
+  }
+  path = "/tmp/ping.result"
 }

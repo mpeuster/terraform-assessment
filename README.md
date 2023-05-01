@@ -8,6 +8,12 @@ The provided solution assumes AWS as cloud provider.
 
 TODO explain solution
 
+
+## Used Providers
+
+- AWS
+- remote (https://registry.terraform.io/providers/tenstad/remote/latest/docs/data-sources/file)
+
 ## Usage
 
 ### Configuration
