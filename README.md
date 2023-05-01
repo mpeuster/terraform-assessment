@@ -31,7 +31,7 @@ Output of an example execution with N=3:
 terraform apply
 ```
 
-```json
+```
 ping_results = {
   "0" = {
     "dst" = "10.0.100.11"
